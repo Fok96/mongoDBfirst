@@ -8,6 +8,11 @@ const cors = require("cors");
 require('dotenv').config();
 require("./config/db");
 
+//require controllers
+const UsersController = require("./controllers/UsersController");
+const ProductController = require("./controllers/ProductController");
+const CategoryController = require("./controllers/CategoryController");
+
 
 
 
@@ -20,51 +25,53 @@ app.listen(process.env.PORT);
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
+
+
 app.use(cors());    
 
-
+// Home Route
 app.get("/",(req,res)=>{
     res.send("OK");
 });
+// User routes
+app.get("/users",UsersController.list);
 
-app.get("/users",(req,res)=> {
+app.get("/users/:userId",UsersController.getOne);
 
-    User.find({},(err,users) => {
-        res.json(users);
-
-    });
-});
-
-app.get("/users/:userId",(req,res)=> {
-
-    const userId=req.params.userId;
-    User.findOne({_id: userId},(err,users) => {
-        res.json(users);
-
-    });
-
-});
-
-app.post("/users",(req,res)=> {
-    const u = new User({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: req.body.email
-    });
-    u.save().then(()=>{
-        res.json({
-            message:"User created"
-        })
-    })
-});
+app.post("/users",UsersController.create);
 
 
-app.delete("/users/:userId",(req,res)=> {
+app.delete("/users/:userId",UsersController.deleteUser);
 
-    const userId=req.params.userId;
-    User.deleteOne({_id:req.params.userId},(err,) => {
-        res.json({message:"user deleted"});
+app.put("/users/:userId",UsersController.update);
 
-    });
+//Product Routes
 
-});
+
+app.get("/product",ProductController.list);
+
+app.get("/product/:productId",ProductController.getOne);
+
+app.post("/product",ProductController.create);
+
+
+app.delete("/product/:productId",ProductController.deleteProduct);
+
+app.put("/product/:productId",ProductController.update);
+
+
+app.get("/product/category/:categoryId",ProductController.getProduct)
+//Category Routes 
+
+app.get("/category",CategoryController.list);
+
+app.get("/category/:categoryId",CategoryController.getOne);
+
+app.post("/category",CategoryController.create);
+
+
+app.delete("/category/:productId",CategoryController.deleteCategory);
+
+app.put("/category/:categoryId",CategoryController.update);
+
+
